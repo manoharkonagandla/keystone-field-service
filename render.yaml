@@ -1,0 +1,36 @@
+# Render.com Blueprint - free tier deployment for Project KEYSTONE backend + Postgres.
+# In the Render dashboard: New -> Blueprint -> point at your GitHub repo -> it reads this file.
+# The frontend (React/Vite) is deployed separately as a free Render "Static Site"
+# (see README.md) or on Vercel/Netlify - see deploy instructions.
+
+databases:
+  - name: keystone-db
+    plan: free
+    databaseName: keystone
+    user: keystone
+
+services:
+  - type: web
+    name: keystone-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      # NOTE: Render's Postgres gives a postgres:// URL, but Spring needs jdbc:postgresql://
+      # After the DB is created, open it in the Render dashboard, copy the Host/Port/Database/
+      # Username/Password from "Info", and set these four vars on the backend service manually
+      # (see README "Deploying to Render" for the exact steps):
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_USERNAME
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        value: "https://YOUR-FRONTEND-URL.onrender.com"
+      - key: EMAIL_NOTIFICATIONS_ENABLED
+        value: "false"
+    healthCheckPath: /actuator/health

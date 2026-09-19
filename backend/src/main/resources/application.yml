@@ -1,0 +1,70 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: keystone
+
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/keystone}
+    username: ${DATABASE_USERNAME:keystone}
+    password: ${DATABASE_PASSWORD:keystone}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: false
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+keystone:
+  jwt:
+    secret: ${JWT_SECRET:this-is-a-dev-only-secret-please-change-me-32chars+}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173}
+  notifications:
+    email-enabled: ${EMAIL_NOTIFICATIONS_ENABLED:false}
+    from: ${MAIL_FROM:no-reply@keystone.local}
+  sla:
+    minutes:
+      URGENT: ${SLA_URGENT_MINUTES:240}
+      HIGH: ${SLA_HIGH_MINUTES:480}
+      MEDIUM: ${SLA_MEDIUM_MINUTES:1440}
+      LOW: ${SLA_LOW_MINUTES:4320}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+logging:
+  level:
+    com.zidio.keystone: INFO
